@@ -441,7 +441,7 @@
 
   <main>
     <div id="demo-banner" class="demo-banner" style="display:none">
-      <span>🧪</span> <span>Demo mode — realistic mock data, no Graph API calls made. <a href="#" onclick="exitDemo()" style="color:var(--accent2);text-decoration:underline">Connect your tenant →</a></span>
+      Demo mode — realistic mock data, no Graph API calls made. <a href="#" onclick="exitDemo()" style="color:var(--accent2);text-decoration:underline">Connect your tenant →</a>
     </div>
 
     <!-- Nav tabs -->
@@ -453,7 +453,7 @@
       <button class="nav-tab" onclick="switchTab('sessions', this)">Sessions</button>
       <button class="nav-tab" onclick="switchTab('policies', this)">Policies</button>
       <button class="nav-tab" onclick="switchTab('apps', this)">Apps</button>
-      <button class="nav-tab" onclick="switchTab('connectivity', this)">🔌 Connectivity</button>
+      <button class="nav-tab" onclick="switchTab('connectivity', this)">Connectivity</button>
     </div>
 
     <!-- ══ OVERVIEW TAB ══ -->
@@ -557,7 +557,7 @@
         <div id="licenses-table"><div class="loading"><div class="spinner"></div>Loading license data…</div></div>
       </div>
       <div class="panel-card" style="margin-top:16px">
-        <div class="section-hdr"><h2>💸 Cost estimator</h2><span style="font-size:0.72rem;color:var(--muted);font-family:var(--mono)">Approximate Microsoft list prices</span></div>
+        <div class="section-hdr"><h2>Cost estimator</h2><span style="font-size:0.72rem;color:var(--muted);font-family:var(--mono)">Approximate Microsoft list prices</span></div>
         <div id="cost-estimator"><div class="loading"><div class="spinner"></div>Loading…</div></div>
       </div>
     </div>
@@ -573,7 +573,7 @@
       <div class="panel-card">
         <div class="section-hdr">
           <h2>W365 users</h2>
-          <button id="nudge-all-btn" class="btn-sm" style="display:none" onclick="nudgeAllInactive()">⚠ Nudge all inactive</button>
+          <button id="nudge-all-btn" class="btn-sm" style="display:none" onclick="nudgeAllInactive()">Nudge all inactive</button>
         </div>
         <div id="users-table"><div class="loading"><div class="spinner"></div>Loading users…</div></div>
       </div>
@@ -626,10 +626,10 @@
     <div class="tab-section" id="tab-connectivity">
 
       <div class="panel-card conn-hero" id="conn-hero">
-        <div class="conn-hero-icon">🔌</div>
+        <div class="conn-hero-icon"></div>
         <div class="conn-hero-title">Connectivity Diagnostics</div>
         <div class="conn-hero-sub">Tests W365 endpoint reachability, latency, RDP Shortpath (UDP 3478), VPN/proxy detection and your public network info — all from this browser.</div>
-        <button class="btn-primary" style="width:auto;padding:11px 32px;font-size:0.95rem;margin-top:0" id="conn-run-btn" onclick="runConnectivityCheck()">▶ Run Check</button>
+        <button class="btn-primary" style="width:auto;padding:11px 32px;font-size:0.95rem;margin-top:0" id="conn-run-btn" onclick="runConnectivityCheck()">Run Check</button>
       </div>
 
       <div id="conn-results" style="display:none">
@@ -1406,7 +1406,7 @@ function renderConcurrency(pcs) {
     const pct = Math.round(active / total * 100);
     const fillClass = pct >= 90 ? 'danger' : pct >= 70 ? 'warn' : '';
     const statusMsg = pct >= 90
-      ? `<span style="color:var(--danger)">⚠ Near capacity — consider adding slots</span>`
+      ? `<span style="color:var(--danger)">Near capacity — consider adding slots</span>`
       : pct >= 70
       ? `<span style="color:var(--warn)">Moderate load — monitor closely</span>`
       : `<span style="color:var(--accent2)">Healthy — capacity available</span>`;
@@ -1548,7 +1548,7 @@ function renderLicensesTable(skus) {
     let statusHtml;
     if (sku.capabilityStatus === 'Trial')     statusHtml = `<span class="expiry-trial">Trial</span>`;
     else if (sku.capabilityStatus === 'Suspended') statusHtml = `<span style="color:var(--danger);font-family:var(--mono);font-size:0.78rem">Suspended</span>`;
-    else if (sku.capabilityStatus === 'Warning')   statusHtml = `<span class="expiry-warn">⚠ Expiring</span>`;
+    else if (sku.capabilityStatus === 'Warning')   statusHtml = `<span class="expiry-warn">Expiring</span>`;
     else statusHtml = `<span class="${w365 ? 'expiry-ok' : ''}" style="${!w365 ? 'color:var(--muted);font-family:var(--mono);font-size:0.78rem' : ''}">Active</span>`;
 
     const rowClass = w365
@@ -1693,7 +1693,7 @@ function renderUsersTable(users) {
   if (_inactiveUsers.length > 0) {
     alertEl.innerHTML = `<div class="inactive-banner">
       <div>
-        <div class="inactive-banner-text">⚠ ${_inactiveUsers.length} user${_inactiveUsers.length > 1 ? 's have' : ' has'} not signed in for 30+ days</div>
+        <div class="inactive-banner-text">${_inactiveUsers.length} user${_inactiveUsers.length > 1 ? 's have' : ' has'} not signed in for 30+ days</div>
         <div class="inactive-banner-sub">These Cloud PC licenses may be going to waste. Send a nudge email to remind them.</div>
       </div>
       <button class="btn-primary" style="width:auto;padding:8px 16px;font-size:0.82rem" onclick="nudgeAllInactive()">Nudge all (${_inactiveUsers.length})</button>
@@ -1735,7 +1735,7 @@ function renderUsersTable(users) {
     const pcNames = u._pcs.map(p => `<div style="font-size:0.72rem;font-family:var(--mono);color:var(--muted)">${escHtml(p.displayName)}</div>`).join('');
 
     const nudgeBtn = isInactive
-      ? `<button class="act-btn" onclick="sendNudgeEmail('${escHtml(u.userPrincipalName)}','${escHtml(u.displayName || u.userPrincipalName)}')">📧 Nudge</button>`
+      ? `<button class="act-btn" onclick="sendNudgeEmail('${escHtml(u.userPrincipalName)}','${escHtml(u.displayName || u.userPrincipalName)}')">Nudge</button>`
       : `<span style="color:var(--muted);font-size:0.75rem;font-family:var(--mono)">—</span>`;
 
     return `<div class="usr-row${isInactive ? '" style="background:rgba(217,119,6,0.04)' : ''}">
@@ -2731,7 +2731,7 @@ async function runConnectivityCheck() {
     else { if (ep.critical) failed++; else warned++; }
 
     const dotCls = !r.reachable ? 'fail' : r.latency > 200 ? 'warn' : 'ok';
-    const statusText = !r.reachable ? `<span style="color:var(--danger)">✗ Unreachable</span>` : `<span style="color:var(--accent2)">✓ Reachable</span>`;
+    const statusText = !r.reachable ? `<span style="color:var(--danger)">Unreachable</span>` : `<span style="color:var(--accent2)">Reachable</span>`;
     const latencyHtml = r.reachable ? `<span class="latency-pill ${latencyClass(r.latency)}">${r.latency}ms</span>` : `<span style="color:var(--danger);font-family:var(--mono)">—</span>`;
     const qualityHtml = r.reachable ? `<span style="font-size:0.78rem;color:var(--muted)">${latencyLabel(r.latency)}${ep.critical ? '' : ''}</span>` : `<span class="badge badge-err" style="font-size:0.7rem">${ep.critical ? 'Critical' : 'Warning'}</span>`;
 
@@ -2778,15 +2778,15 @@ async function runConnectivityCheck() {
     <div class="stat-card"><div class="stat-label">Overall</div><div class="stat-value ${scoreColor}" style="font-size:1.3rem">${overallScore}</div><div class="stat-sub">${passed}/${W365_ENDPOINTS.length} endpoints OK</div></div>
     <div class="stat-card"><div class="stat-label">Avg latency</div><div class="stat-value ${avgLatency < 100 ? 'c-green' : avgLatency < 200 ? 'c-warn' : 'c-red'}">${Math.round(avgLatency)}<span style="font-size:1rem">ms</span></div><div class="stat-sub">to W365 endpoints</div></div>
     <div class="stat-card"><div class="stat-label">RDP Shortpath</div><div class="stat-value ${udpResult.udp ? 'c-green' : 'c-warn'}" style="font-size:1.3rem">${udpResult.udp ? 'Supported' : 'TCP only'}</div><div class="stat-sub">UDP 3478</div></div>
-    <div class="stat-card"><div class="stat-label">VPN / Proxy</div><div class="stat-value" style="font-size:1.3rem">${vpnDetected ? '⚠ Detected' : '✓ None'}</div><div class="stat-sub">${escHtml(country)}</div></div>`;
+    <div class="stat-card"><div class="stat-label">VPN / Proxy</div><div class="stat-value" style="font-size:1.3rem">${vpnDetected ? 'Detected' : 'None'}</div><div class="stat-sub">${escHtml(country)}</div></div>`;
 
   // Recommendations
   const recs = [];
-  if (failed > 0) recs.push({ type: 'fail', icon: '🚨', text: `${failed} critical W365 endpoint(s) are unreachable. Users will not be able to connect. Check firewall rules — all W365 traffic requires TCP 443 outbound.` });
-  if (!udpResult.udp || !udpResult.srflx) recs.push({ type: 'warn', icon: '⚡', text: `UDP 3478 appears blocked. RDP Shortpath won't be available — users will use TCP 443 fallback. For call centers, enabling UDP 3478 outbound significantly reduces latency.` });
-  if (vpnDetected) recs.push({ type: 'warn', icon: '🔒', text: `A VPN or proxy was detected. Ensure W365 endpoints are on the split-tunnel exclusion list to avoid routing Cloud PC traffic through the VPN.` });
-  if (avgLatency > 150) recs.push({ type: 'warn', icon: '🐢', text: `Average latency is ${Math.round(avgLatency)}ms — above the recommended 150ms for W365. Consider whether users are connecting from an optimal location or region.` });
-  if (recs.length === 0) recs.push({ type: 'ok', icon: '✅', text: `All checks passed. Network looks healthy for Windows 365. RDP Shortpath is available for optimal performance.` });
+  if (failed > 0) recs.push({ type: 'fail', icon: '', text: `${failed} critical W365 endpoint(s) are unreachable. Users will not be able to connect. Check firewall rules — all W365 traffic requires TCP 443 outbound.` });
+  if (!udpResult.udp || !udpResult.srflx) recs.push({ type: 'warn', icon: '', text: `UDP 3478 appears blocked. RDP Shortpath won't be available — users will use TCP 443 fallback. For call centers, enabling UDP 3478 outbound significantly reduces latency.` });
+  if (vpnDetected) recs.push({ type: 'warn', icon: '', text: `A VPN or proxy was detected. Ensure W365 endpoints are on the split-tunnel exclusion list to avoid routing Cloud PC traffic through the VPN.` });
+  if (avgLatency > 150) recs.push({ type: 'warn', icon: '', text: `Average latency is ${Math.round(avgLatency)}ms — above the recommended 150ms for W365. Consider whether users are connecting from an optimal location or region.` });
+  if (recs.length === 0) recs.push({ type: 'ok', icon: '', text: `All checks passed. Network looks healthy for Windows 365. RDP Shortpath is available for optimal performance.` });
 
   document.getElementById('conn-recs').innerHTML = `
     <div class="panel-card">
@@ -2794,7 +2794,7 @@ async function runConnectivityCheck() {
       ${recs.map(r => `<div class="rec-card ${r.type}"><div class="rec-icon">${r.icon}</div><div>${r.text}</div></div>`).join('')}
     </div>`;
 
-  btn.textContent = '↺ Re-run';
+  btn.textContent = 'Re-run';
   btn.disabled = false;
 }
 
