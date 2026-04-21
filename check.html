@@ -175,7 +175,7 @@ const ENDPOINTS = [
   { name: 'RD Broker',             host: 'rdbroker.wvd.microsoft.com',                   critical: true  },
   { name: 'Windows 365 Portal',    host: 'windows365.microsoft.com',                     critical: true  },
   { name: 'RD Web Access',         host: 'rdweb.wvd.microsoft.com',                      critical: false },
-  { name: 'Azure Front Door',      host: 'azurefd.net',                                  critical: false },
+  { name: 'Azure Front Door',      host: 'aka.ms',                                       critical: false },
   { name: 'Azure Storage',         host: 'wvdportalstorageblob.blob.core.windows.net',   critical: false },
 ];
 
@@ -185,16 +185,22 @@ function esc(str) {
 
 async function measureLatency(host, samples = 3) {
   const times = [];
+  const TIMEOUT = 6000;
   for (let i = 0; i < samples; i++) {
     const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 6000);
+    const t = setTimeout(() => ctrl.abort(), TIMEOUT);
     const t0 = performance.now();
     try {
-      await fetch(`https://${host}`, { method: 'HEAD', mode: 'no-cors', cache: 'no-store', signal: ctrl.signal });
+      await fetch(`https://${host}/`, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: ctrl.signal });
       clearTimeout(t);
       times.push(Math.round(performance.now() - t0));
-    } catch { clearTimeout(t); }
-    if (i < samples - 1) await new Promise(r => setTimeout(r, 150));
+    } catch(e) {
+      clearTimeout(t);
+      const elapsed = Math.round(performance.now() - t0);
+      // Quick abort = server responded with an error (401/404/405) = still reachable
+      if (elapsed < TIMEOUT - 500) times.push(elapsed);
+    }
+    if (i < samples - 1) await new Promise(r => setTimeout(r, 200));
   }
   if (!times.length) return { reachable: false, latency: null };
   times.sort((a, b) => a - b);
@@ -236,8 +242,13 @@ async function testUDP() {
 }
 
 async function getNetworkInfo() {
-  try { return await (await fetch('https://ipwho.is/')).json(); }
-  catch { return null; }
+  try { return await (await fetch('https://ipapi.co/json/')).json(); }
+  catch {
+    try {
+      const r = await (await fetch('https://api.ipify.org?format=json')).json();
+      return { ip: r.ip };
+    } catch { return null; }
+  }
 }
 
 function getLocalIPs() {
