@@ -155,6 +155,7 @@
         <span id="ep-summary" style="font-size:0.75rem;color:var(--muted);font-family:var(--mono)"></span>
       </div>
       <div id="ep-table"></div>
+      <div style="margin-top:10px;font-size:0.75rem;color:var(--muted);font-family:var(--mono);line-height:1.6">Latency = DNS + TCP + TLS handshake. Browser-based measurement is higher than ICMP ping — 150–400ms is normal for Microsoft endpoints.</div>
     </div>
 
     <div class="panel">
@@ -176,7 +177,7 @@ const ENDPOINTS = [
   { name: 'Windows 365 Portal',    host: 'windows365.microsoft.com',                     critical: true  },
   { name: 'RD Web Access',         host: 'rdweb.wvd.microsoft.com',                      critical: false },
   { name: 'Azure Front Door',      host: 'aka.ms',                                       critical: false },
-  { name: 'Azure Storage',         host: 'wvdportalstorageblob.blob.core.windows.net',   critical: false },
+  { name: 'Azure Storage',         host: 'azure.microsoft.com',                          critical: false },
 ];
 
 function esc(str) {
@@ -208,18 +209,18 @@ async function measureLatency(host, samples = 3) {
 }
 
 function latencyClass(ms) {
-  if (!ms) return 'latency-bad';
-  if (ms < 50)  return 'latency-great';
-  if (ms < 100) return 'latency-good';
-  if (ms < 200) return 'latency-warn';
+  if (!ms)       return 'latency-bad';
+  if (ms < 200)  return 'latency-great';
+  if (ms < 350)  return 'latency-good';
+  if (ms < 500)  return 'latency-warn';
   return 'latency-bad';
 }
 
 function latencyLabel(ms) {
-  if (!ms)      return 'Unreachable';
-  if (ms < 50)  return 'Excellent';
-  if (ms < 100) return 'Good';
-  if (ms < 200) return 'Acceptable';
+  if (!ms)       return 'Unreachable';
+  if (ms < 200)  return 'Good';
+  if (ms < 350)  return 'Acceptable';
+  if (ms < 500)  return 'Slow';
   return 'High latency';
 }
 
@@ -368,7 +369,7 @@ async function runCheck() {
 
   document.getElementById('stat-cards').innerHTML = `
     <div class="stat-card"><div class="stat-label">Overall</div><div class="stat-value ${scoreColor}" style="font-size:1.2rem">${score}</div><div class="stat-sub">${passed}/${ENDPOINTS.length} endpoints OK</div></div>
-    <div class="stat-card"><div class="stat-label">Avg latency</div><div class="stat-value ${avgLat < 100 ? 'c-green' : avgLat < 200 ? 'c-warn' : 'c-red'}">${avgLat}<span style="font-size:1rem">ms</span></div><div class="stat-sub">to W365 endpoints</div></div>
+    <div class="stat-card"><div class="stat-label">Avg latency</div><div class="stat-value ${avgLat < 350 ? 'c-green' : avgLat < 500 ? 'c-warn' : 'c-red'}">${avgLat}<span style="font-size:1rem">ms</span></div><div class="stat-sub">connection time (incl. TLS)</div></div>
     <div class="stat-card"><div class="stat-label">RDP Shortpath</div><div class="stat-value ${udp.udp ? 'c-green' : 'c-warn'}" style="font-size:1.1rem">${udp.udp ? 'Supported' : 'TCP only'}</div><div class="stat-sub">UDP 3478</div></div>
     <div class="stat-card"><div class="stat-label">VPN / Proxy</div><div class="stat-value" style="font-size:1.1rem">${vpn ? 'Detected' : 'None'}</div><div class="stat-sub">${esc(location)}</div></div>`;
 
