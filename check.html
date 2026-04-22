@@ -181,14 +181,14 @@
 
 <script>
 const ENDPOINTS = [
-  { name: 'Microsoft Login (AAD)',  host: 'login.microsoftonline.com',                   critical: true  },
-  { name: 'Microsoft Graph API',    host: 'graph.microsoft.com',                         critical: true  },
-  { name: 'RD Gateway',            host: 'rdgateway.wvd.microsoft.com',                  critical: true  },
-  { name: 'RD Broker',             host: 'rdbroker.wvd.microsoft.com',                   critical: true  },
-  { name: 'Windows 365 Portal',    host: 'windows365.microsoft.com',                     critical: true  },
-  { name: 'RD Web Access',         host: 'rdweb.wvd.microsoft.com',                      critical: false },
-  { name: 'Azure Front Door',      host: 'aka.ms',                                       critical: false },
-  { name: 'Azure Storage',         host: 'azure.microsoft.com',                          critical: false },
+  { name: 'Azure AD Auth',          host: 'login.microsoftonline.com',          desc: 'User sign-in and token issuance for all Microsoft services' },
+  { name: 'Microsoft Graph',        host: 'graph.microsoft.com',                desc: 'Identity, policy, and device data API' },
+  { name: 'RD Gateway (AFD)',       host: 'rdgateway.wvd.microsoft.com',        desc: 'RDP over TCP 443 — first hop is the nearest Azure Front Door edge node' },
+  { name: 'RD Broker (AFD)',        host: 'rdbroker.wvd.microsoft.com',         desc: 'Session brokering and load balancing for Cloud PC connections' },
+  { name: 'Windows 365 Portal',     host: 'windows365.microsoft.com',           desc: 'Admin and user-facing Windows 365 web portal' },
+  { name: 'RD Web Access',          host: 'rdweb.wvd.microsoft.com',            desc: 'HTML5 browser-based Remote Desktop client' },
+  { name: 'Intune MDM',             host: 'manage.microsoft.com',               desc: 'Device compliance checks and policy enforcement for Cloud PCs' },
+  { name: 'Device Registration',    host: 'enterpriseregistration.windows.net', desc: 'Azure AD join and device enrollment required for Cloud PC provisioning' },
 ];
 
 function esc(str) {
@@ -406,8 +406,9 @@ async function runCheck() {
     ${ENDPOINTS.map((ep, i) => `
       <div class="ep-row" id="ep-${i}">
         <div>
-          <div style="font-weight:600">${esc(ep.name)}${ep.critical ? '' : ' <span style="font-size:0.7rem;color:var(--muted);font-family:var(--mono)">(optional)</span>'}</div>
+          <div style="font-weight:600">${esc(ep.name)}</div>
           <div style="font-family:var(--mono);font-size:0.7rem;color:var(--muted)">${esc(ep.host)}</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">${esc(ep.desc)}</div>
         </div>
         <div class="ep-status"><div class="ep-dot pending"></div><span style="color:var(--muted)">Testing…</span></div>
         <div style="color:var(--muted);font-family:var(--mono);font-size:0.78rem">—</div>
@@ -439,7 +440,7 @@ async function runCheck() {
     const ep = ENDPOINTS[i];
     if (r.reachable && r.latency < 200) passed++;
     else if (r.reachable) warned++;
-    else { if (ep.critical) failed++; else warned++; }
+    else failed++;
 
     const dot   = !r.reachable ? 'fail' : r.latency > 200 ? 'warn' : 'ok';
     const label = !r.reachable
@@ -447,12 +448,13 @@ async function runCheck() {
       : `<span style="color:var(--accent2)">Reachable</span>`;
     const lat = r.reachable
       ? `<span class="latency-pill ${latencyClass(r.latency)}">${r.latency}ms — ${latencyLabel(r.latency)}</span>`
-      : `<span class="badge badge-err">${ep.critical ? 'Critical' : 'Warning'}</span>`;
+      : `<span class="badge badge-err">Blocked</span>`;
 
     document.getElementById(`ep-${i}`).innerHTML = `
       <div>
-        <div style="font-weight:600">${esc(ep.name)}${ep.critical ? '' : ' <span style="font-size:0.7rem;color:var(--muted);font-family:var(--mono)">(optional)</span>'}</div>
+        <div style="font-weight:600">${esc(ep.name)}</div>
         <div style="font-family:var(--mono);font-size:0.7rem;color:var(--muted)">${esc(ep.host)}</div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">${esc(ep.desc)}</div>
       </div>
       <div class="ep-status"><div class="ep-dot ${dot}"></div>${label}</div>
       <div>${lat}</div>`;
