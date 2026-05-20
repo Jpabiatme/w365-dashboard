@@ -2535,11 +2535,12 @@ async function nudgeAllInactive() {
 // COST ESTIMATOR
 // ══════════════════════════════════════════════
 const W365_PRICES = {
-  // Enterprise — keyed by "vcpu-ram"
-  '1-2': 20, '2-4': 31, '2-8': 41, '4-16': 66, '8-32': 111
+  // Enterprise — keyed by "vcpu-ram", lowest storage tier. Source: microsoft.com/en-us/windows-365/enterprise/all-pricing
+  '2-4': 28, '2-8': 41, '4-16': 66, '8-32': 123, '16-64': 277
 };
 const W365_FRONTLINE_PRICES = {
-  '2-8': 35, '4-16': 56, '8-32': 105
+  // Frontline — per license (1 license = up to 3 Cloud PCs, 1 active at a time). Source: microsoft.com/en-us/windows-365/frontline
+  '2-4': 42, '4-16': 99, '8-32': 185
 };
 
 function estimateSkuPrice(sku) {
@@ -2549,7 +2550,7 @@ function estimateSkuPrice(sku) {
   if (!match) return null;
   const key = `${match[1]}-${match[2]}`;
   const prices = isFrontline ? W365_FRONTLINE_PRICES : W365_PRICES;
-  return prices[key] || null;
+  return { price: prices[key] || null, isFrontline };
 }
 
 function renderCostEstimator(skus) {
@@ -2566,7 +2567,9 @@ function renderCostEstimator(skus) {
   </div>`;
 
   const rows = w365.map(sku => {
-    const price = estimateSkuPrice(sku);
+    const est = estimateSkuPrice(sku);
+    const price = est?.price;
+    const isFrontline = est?.isFrontline;
     const purchased = sku.prepaidUnits?.enabled || 0;
     const assigned  = sku.consumedUnits || 0;
     const unused    = Math.max(0, purchased - assigned);
@@ -2579,10 +2582,13 @@ function renderCostEstimator(skus) {
     const name = raw.replace(/^CPC_E_/i,'W365 Enterprise ').replace(/^CPC_F_/i,'W365 Frontline ').replace(/^Windows_365_S_/i,'W365 Frontline ').replace(/^Windows_365_/i,'W365 ').replace(/_/g,' ').trim();
 
     const wasteColor = unused > 0 ? 'var(--danger)' : 'var(--accent2)';
+    const priceLabel = price
+      ? `$${price}/mo${isFrontline ? '<span style="color:var(--muted);font-size:0.7rem"> /license</span>' : ''}`
+      : '<span style="color:var(--muted)">unknown</span>';
 
     return `<div class="cost-row">
-      <div style="font-weight:600">${escHtml(name)}</div>
-      <div style="font-family:var(--mono)">${price ? '$' + price + '/mo' : '<span style="color:var(--muted)">unknown</span>'}</div>
+      <div style="font-weight:600">${escHtml(name)}${isFrontline ? ' <span style="font-size:0.7rem;color:var(--muted);font-family:var(--mono)">(up to 3 users/license)</span>' : ''}</div>
+      <div style="font-family:var(--mono)">${priceLabel}</div>
       <div style="font-family:var(--mono)">${purchased}</div>
       <div style="font-family:var(--mono);font-weight:600">${monthly ? '$' + monthly.toLocaleString() : '—'}</div>
       <div style="font-family:var(--mono);color:${wasteColor}">${waste ? '$' + waste.toLocaleString() : '—'}${unused > 0 ? ` <span style="color:var(--muted);font-size:0.72rem">(${unused} unused)</span>` : ''}</div>
