@@ -110,4 +110,5 @@ Paste your **Tenant ID** and **Client ID** into the login screen and click **Sig
 - Vanilla HTML, CSS and JavaScript — no frameworks, no build process
 - [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) for Microsoft authentication
 - [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/) for all tenant data
+- Github Copilot & Claude for coding assistance. 
 
