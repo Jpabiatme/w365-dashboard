@@ -1341,7 +1341,22 @@ async function loadUsage() {
     } else {
       renderConcurrency(allCloudPCs);
       renderIdleList(idlePCs);
-      renderSessionsFallbackFromPCs();
+      // Report API requires POST — not available via simple GET, show PC activity instead
+      const fallbackRows = pcs.slice(0, 15).map(pc => {
+        const initials = (pc.userPrincipalName || '?').split('@')[0].slice(0,2).toUpperCase();
+        const modified = pc.lastModifiedDateTime ? new Date(pc.lastModifiedDateTime).toLocaleDateString() : '—';
+        return `<div class="session-row">
+          <div class="session-av">${escHtml(initials)}</div>
+          <div class="session-info">
+            <div class="session-user">${escHtml(pc.userPrincipalName || 'Unassigned')}</div>
+            <div class="session-meta">${escHtml(pc.displayName)} · last modified ${modified}</div>
+          </div>
+          <div class="session-dur"><span class="badge ${pc.status === 'provisioned' ? 'badge-ok' : 'badge-neutral'}">${escHtml(pc.status)}</span></div>
+        </div>`;
+      }).join('');
+      document.getElementById('sessions-section').innerHTML = fallbackRows || '<div class="empty">No Cloud PCs found.</div>';
+      document.getElementById('u-sessions').textContent = pcs.length;
+      document.getElementById('u-avgdur').textContent = '—';
     }
     renderFunnel('frontline');
     usageLoaded = true;
